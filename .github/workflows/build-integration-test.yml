@@ -1,20 +1,21 @@
-name: Check Lambda Runtime
+name: Build integration tests
 
 on:
   push:
     paths:
       - 'lambda-runtime-api-client/**'
-      - 'lambda-extension/**'
       - 'lambda-runtime/**'
+      - 'lambda-http/**'
+      - 'lambda-extension/**'
       - 'Cargo.toml'
 
   pull_request:
     paths:
       - 'lambda-runtime-api-client/**'
-      - 'lambda-extension/**'
       - 'lambda-runtime/**'
+      - 'lambda-http/**'
+      - 'lambda-extension/**'
       - 'Cargo.toml'
-
 
 jobs:
   build-runtime:
@@ -29,15 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build Runtime API Client
+      - name: Build Integration tests
         uses: ./.github/actions/rust-build
         with:
-          package: lambda_runtime_api_client
-          toolchain: ${{ matrix.toolchain}}
-
-
-      - name: Build Extensions runtime
-        uses: ./.github/actions/rust-build
-        with:
-          package: lambda-extension
+          package: lambda_integration_tests
           toolchain: ${{ matrix.toolchain}}
