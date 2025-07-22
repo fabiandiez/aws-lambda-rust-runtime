@@ -5,7 +5,7 @@ use serde_json::Value;
 /// Parse EventBridge events.
 /// Deserialize the event detail into a structure that's `DeserializeOwned`.
 ///
-/// See https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events-structure.html for structure details.
+/// See <https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events-structure.html> for structure details.
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(bound(deserialize = "T1: DeserializeOwned"))]
 #[serde(rename_all = "kebab-case")]
@@ -30,6 +30,13 @@ where
     pub resources: Option<Vec<String>>,
     #[serde(bound = "")]
     pub detail: T1,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[cfg(test)]

@@ -37,6 +37,11 @@ Or PiP on any system with Python 3 installed:
 ```bash
 pip3 install cargo-lambda
 ```
+Alternative, install the pip package as an executable using [uv](https://docs.astral.sh/uv/)
+
+```bash
+uv tool install cargo-lambda
+```
 
 See other installation options in [the Cargo Lambda documentation](https://www.cargo-lambda.info/guide/installation.html).
 
@@ -158,7 +163,7 @@ async fn main() -> Result<(), Error> {
     let shutdown_hook = || async move {
       std::mem::drop(log_guard);
     };
-    lambda_runtime::spawn_graceful_shutdown_handler(shutdown_hook);
+    lambda_runtime::spawn_graceful_shutdown_handler(shutdown_hook).await;
 
     lambda_runtime::run(func).await?;
     Ok(())

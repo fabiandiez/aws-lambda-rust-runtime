@@ -5,6 +5,8 @@ use crate::{
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "catch-all-fields")]
+use serde_json::Value;
 use std::fmt;
 
 #[cfg(test)]
@@ -27,7 +29,7 @@ impl fmt::Display for StreamViewType {
             StreamViewType::NewAndOldImages => "NEW_AND_OLD_IMAGES",
             StreamViewType::KeysOnly => "KEYS_ONLY",
         };
-        write!(f, "{}", val)
+        write!(f, "{val}")
     }
 }
 
@@ -48,7 +50,7 @@ impl fmt::Display for StreamStatus {
             StreamStatus::Disabling => "DISABLING",
             StreamStatus::Disabled => "DISABLED",
         };
-        write!(f, "{}", val)
+        write!(f, "{val}")
     }
 }
 
@@ -69,7 +71,7 @@ impl fmt::Display for SharedIteratorType {
             SharedIteratorType::AtSequenceNumber => "AT_SEQUENCE_NUMBER",
             SharedIteratorType::AfterSequenceNumber => "AFTER_SEQUENCE_NUMBER",
         };
-        write!(f, "{}", val)
+        write!(f, "{val}")
     }
 }
 
@@ -88,7 +90,7 @@ impl fmt::Display for OperationType {
             OperationType::Modify => "MODIFY",
             OperationType::Remove => "REMOVE",
         };
-        write!(f, "{}", val)
+        write!(f, "{val}")
     }
 }
 
@@ -105,20 +107,27 @@ impl fmt::Display for KeyType {
             KeyType::Hash => "HASH",
             KeyType::Range => "RANGE",
         };
-        write!(f, "{}", val)
+        write!(f, "{val}")
     }
 }
 
 /// The `Event` stream event handled to Lambda
-/// http://docs.aws.amazon.com/lambda/latest/dg/eventsources.html#eventsources-ddb-update
+/// <http://docs.aws.amazon.com/lambda/latest/dg/eventsources.html#eventsources-ddb-update>
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Event {
     #[serde(rename = "Records")]
     pub records: Vec<EventRecord>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// `TimeWindowEvent` represents an Amazon Dynamodb event when using time windows
-/// ref. https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows
+/// ref. <https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows>
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TimeWindowEvent {
@@ -128,6 +137,13 @@ pub struct TimeWindowEvent {
     #[serde(rename = "TimeWindowProperties")]
     #[serde(flatten)]
     pub time_window_properties: TimeWindowProperties,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// `TimeWindowEventResponse` is the outer structure to report batch item failures for DynamoDBTimeWindowEvent.
@@ -138,6 +154,13 @@ pub struct TimeWindowEventResponse {
     #[serde(flatten)]
     pub time_window_event_response_properties: TimeWindowEventResponseProperties,
     pub batch_item_failures: Vec<DynamoDbBatchItemFailure>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// EventRecord stores information about each record of a DynamoDb stream event
@@ -198,6 +221,13 @@ pub struct EventRecord {
     /// The DynamoDB table that this event was recorded for.
     #[serde(default)]
     pub table_name: Option<String>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -207,6 +237,13 @@ pub struct UserIdentity {
     pub type_: String,
     #[serde(default)]
     pub principal_id: String,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// `DynamoDbStreamRecord` represents a description of a single data modification that was performed on an item
@@ -215,8 +252,8 @@ pub struct UserIdentity {
 #[serde(rename_all = "camelCase")]
 pub struct StreamRecord {
     /// The approximate date and time when the stream record was created, in UNIX
-    /// epoch time (http://www.epochconverter.com/) format. Might not be present in
-    /// the record: https://github.com/awslabs/aws-lambda-rust-runtime/issues/889
+    /// epoch time (<http://www.epochconverter.com/>) format. Might not be present in
+    /// the record: <https://github.com/awslabs/aws-lambda-rust-runtime/issues/889>
     #[serde(rename = "ApproximateCreationDateTime")]
     #[serde(with = "float_unix_epoch")]
     #[serde(default)]
@@ -248,6 +285,13 @@ pub struct StreamRecord {
     #[serde(default)]
     #[serde(rename = "StreamViewType")]
     pub stream_view_type: Option<StreamViewType>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[cfg(test)]

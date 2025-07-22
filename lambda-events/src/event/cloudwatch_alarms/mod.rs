@@ -11,7 +11,7 @@ use serde_json::Value;
 /// `CloudWatchAlarm` is the generic outer structure of an event triggered by a CloudWatch Alarm.
 /// You probably want to use `CloudWatchMetricAlarm` or `CloudWatchCompositeAlarm` if you know which kind of alarm your function is receiving.
 /// For examples of events that come via CloudWatch Alarms,
-/// see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#Lambda-action-payload
+/// see <https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#Lambda-action-payload>
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CloudWatchAlarm<C = Value, R = CloudWatchAlarmStateReasonData>
@@ -33,6 +33,13 @@ where
 
     #[serde(default, bound = "")]
     pub alarm_data: CloudWatchAlarmData<C, R>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// `CloudWatchMetricAlarm` is the structure of an event triggered by CloudWatch metric alarms.
@@ -59,6 +66,13 @@ where
     pub previous_state: Option<CloudWatchAlarmState<R>>,
     #[serde(bound = "")]
     pub configuration: C,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -76,6 +90,13 @@ where
     pub timestamp: DateTime<Utc>,
     pub actions_suppressed_by: Option<String>,
     pub actions_suppressed_reason: Option<String>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -85,6 +106,13 @@ pub struct CloudWatchMetricAlarmConfiguration {
     pub description: Option<String>,
     #[serde(default)]
     pub metrics: Vec<CloudWatchMetricDefinition>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -94,6 +122,13 @@ pub struct CloudWatchMetricDefinition {
     #[serde(default)]
     pub return_data: bool,
     pub metric_stat: CloudWatchMetricStatDefinition,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -105,6 +140,13 @@ pub struct CloudWatchMetricStatDefinition {
     pub stat: Option<String>,
     pub period: u16,
     pub metric: CloudWatchMetricStatMetricDefinition,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -114,6 +156,13 @@ pub struct CloudWatchMetricStatMetricDefinition {
     pub namespace: Option<String>,
     pub name: String,
     pub dimensions: HashMap<String, String>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -123,6 +172,13 @@ pub struct CloudWatchCompositeAlarmConfiguration {
     pub actions_suppressor: String,
     pub actions_suppressor_wait_period: u16,
     pub actions_suppressor_extension_period: u16,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -169,6 +225,13 @@ pub struct CloudWatchAlarmStateReasonDataMetric {
     pub threshold: f64,
     #[serde(default)]
     pub evaluated_datapoints: Vec<CloudWatchAlarmStateEvaluatedDatapoint>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
@@ -181,6 +244,13 @@ pub struct CloudWatchAlarmStateEvaluatedDatapoint {
     pub value: Option<f64>,
     #[serde(default)]
     pub threshold: Option<f64>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -188,6 +258,13 @@ pub struct CloudWatchAlarmStateEvaluatedDatapoint {
 pub struct ClodWatchAlarmStateReasonDataComposite {
     #[serde(default)]
     pub triggering_alarms: Vec<CloudWatchAlarmStateTriggeringAlarm>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -195,6 +272,13 @@ pub struct ClodWatchAlarmStateReasonDataComposite {
 pub struct CloudWatchAlarmStateTriggeringAlarm {
     pub arn: String,
     pub state: CloudWatchAlarmStateTriggeringAlarmState,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -203,6 +287,13 @@ pub struct CloudWatchAlarmStateTriggeringAlarmState {
     pub timestamp: DateTime<Utc>,
     #[serde(default)]
     pub value: CloudWatchAlarmStateValue,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 impl<'de> Deserialize<'de> for CloudWatchAlarmStateReasonData {
@@ -224,7 +315,7 @@ impl Serialize for CloudWatchAlarmStateReasonData {
             Self::Composite(m) => serde_json::to_string(m),
             Self::Generic(m) => serde_json::to_string(m),
         };
-        let s = r.map_err(|e| SerError::custom(format!("failed to serialize struct as string {}", e)))?;
+        let s = r.map_err(|e| SerError::custom(format!("failed to serialize struct as string {e}")))?;
 
         serializer.serialize_str(&s)
     }

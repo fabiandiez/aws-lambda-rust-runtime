@@ -3,17 +3,26 @@ use crate::{
     time_window::{TimeWindowEventResponseProperties, TimeWindowProperties},
 };
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "catch-all-fields")]
+use serde_json::Value;
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct KinesisEvent {
     #[serde(rename = "Records")]
     pub records: Vec<KinesisEventRecord>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// `KinesisTimeWindowEvent` represents an Amazon Dynamodb event when using time windows
-/// ref. https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-windows
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+/// ref. <https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-windows>
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct KinesisTimeWindowEvent {
     #[serde(rename = "KinesisEvent")]
@@ -22,6 +31,13 @@ pub struct KinesisTimeWindowEvent {
     #[serde(rename = "TimeWindowProperties")]
     #[serde(flatten)]
     pub time_window_properties: TimeWindowProperties,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 /// `KinesisTimeWindowEventResponse` is the outer structure to report batch item failures for KinesisTimeWindowEvent.
@@ -32,9 +48,16 @@ pub struct KinesisTimeWindowEventResponse {
     #[serde(flatten)]
     pub time_window_event_response_properties: TimeWindowEventResponseProperties,
     // pub batch_item_failures: Vec<KinesisBatchItemFailure>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct KinesisEventRecord {
     /// nolint: stylecheck
@@ -57,9 +80,16 @@ pub struct KinesisEventRecord {
     #[serde(default)]
     pub invoke_identity_arn: Option<String>,
     pub kinesis: KinesisRecord,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct KinesisRecord {
     pub approximate_arrival_timestamp: SecondTimestamp,
@@ -72,6 +102,13 @@ pub struct KinesisRecord {
     pub sequence_number: String,
     #[serde(default)]
     pub kinesis_schema_version: Option<String>,
+    /// Catchall to catch any additional fields that were present but not explicitly defined by this struct.
+    /// Enabled with Cargo feature `catch-all-fields`.
+    /// If `catch-all-fields` is disabled, any additional fields that are present will be ignored.
+    #[cfg(feature = "catch-all-fields")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "catch-all-fields")))]
+    #[serde(flatten)]
+    pub other: serde_json::Map<String, Value>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -108,5 +145,18 @@ mod test {
         let output: String = serde_json::to_string(&parsed).unwrap();
         let reparsed: KinesisEvent = serde_json::from_slice(output.as_bytes()).unwrap();
         assert_eq!(parsed, reparsed);
+    }
+
+    /// `cargo lambda init` autogenerates code that relies on `Default` being implemented for event structs.
+    ///
+    /// This test validates that `Default` is implemented for each KinesisEvent struct.
+    #[test]
+    #[cfg(feature = "kinesis")]
+    fn test_ensure_default_implemented_for_structs() {
+        let _kinesis_event = KinesisEvent::default();
+        let _kinesis_time_window_event = KinesisTimeWindowEvent::default();
+        let _kinesis_event_record = KinesisEventRecord::default();
+        let _kinesis_record = KinesisRecord::default();
+        let _kinesis_encryption_type = KinesisEncryptionType::default();
     }
 }

@@ -33,5 +33,8 @@ jobs:
       - name: Build Integration tests
         uses: ./.github/actions/rust-build
         with:
-          package: lambda_integration_tests
+          package: lambda-integration-tests
           toolchain: ${{ matrix.toolchain}}
+          # the tests will generally fail in ci since they make a network call to a real endpoint,
+          # this step is just designed to make sure they build successfully
+          run-tests: false

@@ -1,6 +1,7 @@
 #![deny(clippy::all, clippy::cargo)]
 #![allow(clippy::multiple_crate_versions, clippy::type_complexity)]
 #![warn(missing_docs, nonstandard_style, rust_2018_idioms)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 //! This module includes utilities to create Lambda Runtime Extensions.
 //!
@@ -25,6 +26,7 @@ pub mod requests;
 
 /// Utilities to initialize and use `tracing` and `tracing-subscriber` in Lambda Functions.
 #[cfg(feature = "tracing")]
+#[cfg_attr(docsrs, doc(cfg(feature = "tracing")))]
 pub use lambda_runtime_api_client::tracing;
 
 /// Execute the given events processor

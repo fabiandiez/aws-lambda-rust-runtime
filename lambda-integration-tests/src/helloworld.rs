@@ -8,7 +8,7 @@ use lambda_runtime::{service_fn, tracing, Error, LambdaEvent};
 async fn main() -> Result<(), Error> {
     tracing::init_default_subscriber();
     let func = service_fn(func);
-    lambda_runtime::spawn_graceful_shutdown_handler(|| async move {});
+    lambda_runtime::spawn_graceful_shutdown_handler(|| async move {}).await;
     lambda_runtime::run(func).await?;
     Ok(())
 }
@@ -22,6 +22,8 @@ async fn func(_event: LambdaEvent<ApiGatewayProxyRequest>) -> Result<ApiGatewayP
         is_base64_encoded: false,
         body: Some("Hello world!".into()),
         headers,
+        #[cfg(feature = "catch-all-fields")]
+        other: Default::default(),
     };
     Ok(resp)
 }

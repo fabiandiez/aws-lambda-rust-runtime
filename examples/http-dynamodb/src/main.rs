@@ -1,21 +1,21 @@
 use aws_sdk_dynamodb::Client;
 use lambda_http::{run, service_fn, tracing, Body, Error, Request, Response};
 use serde::{Deserialize, Serialize};
-use serde_dynamo::to_attribute_value;
+use serde_dynamo::to_item;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Item {
-    pub p_type: String,
+    pub account_type: String,
     pub age: String,
     pub username: String,
-    pub first: String,
-    pub last: String,
+    pub first_name: String,
+    pub last_name: String,
 }
 
 /// This is the main body for the function.
 /// Write your code inside it.
 /// You can see more examples in Runtime's repository:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
+/// - <https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples>
 async fn handle_request(db_client: &Client, event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let body = event.body();
@@ -71,20 +71,9 @@ async fn main() -> Result<(), Error> {
 // Add an item to a table.
 // snippet-start:[dynamodb.rust.add-item]
 pub async fn add_item(client: &Client, item: Item, table: &str) -> Result<(), Error> {
-    let user_av = to_attribute_value(item.username)?;
-    let type_av = to_attribute_value(item.p_type)?;
-    let age_av = to_attribute_value(item.age)?;
-    let first_av = to_attribute_value(item.first)?;
-    let last_av = to_attribute_value(item.last)?;
+    let item = to_item(item)?;
 
-    let request = client
-        .put_item()
-        .table_name(table)
-        .item("username", user_av)
-        .item("account_type", type_av)
-        .item("age", age_av)
-        .item("first_name", first_av)
-        .item("last_name", last_av);
+    let request = client.put_item().table_name(table).set_item(Some(item));
 
     tracing::info!("adding item to DynamoDB");
 

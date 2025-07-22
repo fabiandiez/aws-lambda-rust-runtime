@@ -1,4 +1,5 @@
 #![warn(missing_docs, rust_2018_idioms)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 //#![deny(warnings)]
 //! Enriches the `lambda` crate with [`http`](https://github.com/hyperium/http)
 //! types targeting AWS [ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), [API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) REST and HTTP API lambda integrations.
@@ -67,6 +68,7 @@ extern crate maplit;
 pub use http::{self, Response};
 /// Utilities to initialize and use `tracing` and `tracing-subscriber` in Lambda Functions.
 #[cfg(feature = "tracing")]
+#[cfg_attr(docsrs, doc(cfg(feature = "tracing")))]
 pub use lambda_runtime::tracing;
 use lambda_runtime::Diagnostic;
 pub use lambda_runtime::{self, service_fn, tower, Context, Error, LambdaEvent, Service};
@@ -188,7 +190,7 @@ where
 /// Runtime APIs](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html).
 ///
 /// This takes care of transforming the LambdaEvent into a [`Request`] and then
-/// converting the result into a [`LambdaResponse`].
+/// converting the result into a `LambdaResponse`.
 pub async fn run<'a, R, S, E>(handler: S) -> Result<(), Error>
 where
     S: Service<Request, Response = R, Error = E>,
